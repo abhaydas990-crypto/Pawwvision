@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PawVision AI | Dog & Cat Classifier</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+   <link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="navbar">
+
+        <div class="logo-area">
+
+            <div class="logo-icon">
+                🐾
+            </div>
+
+            <div>
+                <h1>PawVision <span>AI</span></h1>
+                <p>Computer Vision Classifier</p>
+            </div>
+
+        </div>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            Model Online
+        </div>
+
+    </header>
+
+
+    <!-- ================= HERO ================= -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <div class="badge">
+                <span>✦</span>
+                AI POWERED IMAGE CLASSIFICATION
+            </div>
+
+            <h2>
+                Is it a <span>Dog</span> or a <span>Cat?</span>
+            </h2>
+
+            <p>
+                Upload an image and let our Convolutional Neural Network
+                analyze it instantly.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main-container">
+
+        <!-- Upload Card -->
+
+        <section class="classifier-card">
+
+            <div class="card-header">
+
+                <div>
+                    <h3>Upload Image</h3>
+                    <p>Choose an image to classify</p>
+                </div>
+
+                <div class="image-icon">
+                    ◎
+                </div>
+
+            </div>
+
+
+            <!-- Drop Zone -->
+
+            <div
+                class="dropzone"
+                id="dropzone"
+                tabindex="0"
+                role="button"
+                aria-label="Upload an image"
+            >
+
+                <input
+                    type="file"
+                    id="fileInput"
+                    accept="image/png, image/jpeg, image/jpg, image/webp"
+                    hidden
+                >
+
+                <div class="dz-empty" id="dzEmpty">
+
+                    <div class="upload-icon">
+                        <svg
+                            width="42"
+                            height="42"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                        >
+                            <path
+                                d="M12 16V4"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                            />
+
+                            <path
+                                d="M7 9L12 4L17 9"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+
+                            <path
+                                d="M4 16V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V16"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+                    </div>
+
+                    <h4>Drag & Drop your image</h4>
+
+                    <p>
+                        or <strong>browse files</strong> from your computer
+                    </p>
+
+                    <span class="formats">
+                        PNG · JPG · JPEG · WEBP
+                    </span>
+
+                </div>
+
+
+                <img
+                    id="previewImg"
+                    class="dz-preview"
+                    alt="Selected image preview"
+                    hidden
+                >
+
+                <div class="change-image" id="changeImage" hidden>
+                    Change Image
+                </div>
+
+            </div>
+
+
+            <!-- Predict Button -->
+
+            <button
+                class="predict-btn"
+                id="predictBtn"
+                disabled
+            >
+
+                <span class="btn-icon">✦</span>
+
+                <span class="btn-text">
+                    Analyze Image
+                </span>
+
+            </button>
+
+
+            <!-- Error -->
+
+            <p
+                class="error"
+                id="errorMsg"
+                hidden
+            ></p>
+
+        </section>
+
+
+        <!-- ================= RESULT ================= -->
+
+        <section
+            class="result-card"
+            id="result"
+            hidden
+        >
+
+            <div class="result-header">
+
+                <div>
+                    <span class="result-overline">
+                        ANALYSIS COMPLETE
+                    </span>
+
+                    <h3>Prediction Result</h3>
+                </div>
+
+                <div class="success-icon">
+                    ✓
+                </div>
+
+            </div>
+
+
+            <div class="prediction-area">
+
+                <div class="prediction-icon" id="predictionIcon">
+                    🐾
+                </div>
+
+                <div>
+
+                    <span class="prediction-small">
+                        DETECTED ANIMAL
+                    </span>
+
+                    <div
+                        class="result-label"
+                        id="resultLabel"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Confidence -->
+
+            <div class="confidence-section">
+
+                <div class="confidence-top">
+
+                    <span>Confidence Score</span>
+
+                    <strong id="confidenceText">
+                        0%
+                    </strong>
+
+                </div>
+
+                <div class="progress-track">
+
+                    <div
+                        class="progress-bar"
+                        id="confidenceBar"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Classification Details -->
+
+            <div class="result-details">
+
+                <div class="detail-item">
+
+                    <span class="detail-icon dog-bg">
+                        🐶
+                    </span>
+
+                    <div>
+                        <small>CLASS</small>
+                        <strong id="classText">—</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-icon">
+                        ◉
+                    </span>
+
+                    <div>
+                        <small>MODEL</small>
+                        <strong>CNN</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-icon">
+                        ⚡
+                    </span>
+
+                    <div>
+                        <small>INPUT SIZE</small>
+                        <strong>128 × 128</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= MODEL INFO ================= -->
+
+    <section class="model-section">
+
+        <div class="section-title">
+
+            <span class="mini-badge">
+                ABOUT THE MODEL
+            </span>
+
+            <h3>Powered by Deep Learning</h3>
+
+            <p>
+                A lightweight Convolutional Neural Network trained
+                to distinguish between dogs and cats.
+            </p>
+
+        </div>
+
+
+        <div class="model-grid">
+
+            <div class="info-card">
+
+                <div class="info-icon">
+                    🧠
+                </div>
+
+                <div>
+                    <h4>CNN Architecture</h4>
+                    <p>
+                        3 convolutional blocks
+                        for visual feature extraction.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <div class="info-icon">
+                    📐
+                </div>
+
+                <div>
+                    <h4>Image Processing</h4>
+                    <p>
+                        Images are resized to
+                        128 × 128 pixels.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <div class="info-icon">
+                    🎯
+                </div>
+
+                <div>
+                    <h4>Classification</h4>
+                    <p>
+                        Binary classification:
+                        Dog or Cat.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        <div class="footer-logo">
+            🐾 PawVision AI
+        </div>
+
+        <p>
+            Built with TensorFlow & Keras
+            · Machine Learning Project
+        </p>
+
+        <span>
+            © 2026 PawVision AI
+        </span>
+
+    </footer>
+
+</div>
+
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
